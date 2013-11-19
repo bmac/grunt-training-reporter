@@ -91,8 +91,8 @@ module.exports = function(grunt) {
     var options = this.options({
       tokenFile: '.accessToken',
       testOutputFile: 'out.json',
-      tokenRequestUri: 'http://localhost:1337/oauth/token',
-      testReportUri: 'http://localhost:1337/testResult'
+      tokenRequestUri: 'http://localhost:1337/api/v1/oauth/token',
+      testReportUri: 'http://localhost:1337/api/v1/testResult'
     });
 
     // Find local auth token.
