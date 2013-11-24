@@ -72,7 +72,9 @@ var getToken = function(options) {
 
 var getTestStats = function(testOutputFile) {
   return Q.ninvoke(fs, 'readFile', testOutputFile, 'utf8').then(function(output) {
-    var stats = JSON.parse(output).stats;
+    var jsonReport = JSON.parse(output);
+    var stats = jsonReport.stats;
+    stats.testsPassed = jsonReport.passes;
     stats.name = process.cwd().split('/').pop();
     return stats;
   });
@@ -92,7 +94,7 @@ module.exports = function(grunt) {
       tokenFile: '.accessToken',
       testOutputFile: 'out.json',
       tokenRequestUri: 'http://localhost:1337/api/v1/oauth/token',
-      testReportUri: 'http://localhost:1337/api/v1/testResult'
+      testReportUri: 'http://localhost:1337/api/v1/testSnapshot'
     });
 
     // Find local auth token.
@@ -108,7 +110,7 @@ module.exports = function(grunt) {
 
     // Using auth token post results
     Q.all([token, testStats]).then(function(results) {
-      var token = results[0], 
+      var token = results[0],
           testResults = results[1],
           params = _.extend({
           access_token: token
