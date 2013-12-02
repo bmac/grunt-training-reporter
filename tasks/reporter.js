@@ -12,7 +12,9 @@ var prompt = require('prompt'),
     Q = require('q'),
     fs = require('fs'),
     _ = require('lodash'),
-    request = require('superagent');
+    request = require('superagent'),
+    globule = require('globule');
+
 
 
 // attempts to read the token from the file
@@ -80,6 +82,19 @@ var getTestStats = function(testOutputFile) {
   });
 };
 
+var getFiles = function(pattern) {
+  var files = globule.find([pattern, '!node_modules/**/*.js']);
+  var promises = files.map(function(fileName) {
+    return Q.ninvoke(fs, 'readFile', fileName, 'utf8').then(function(fileText) {
+      return {
+        fileName: fileName,
+        fileText: fileText
+      };
+    });
+  });
+  return Q.all(promises);
+};
+
 module.exports = function(grunt) {
 
   // Please see the Grunt documentation for more information regarding task
@@ -93,8 +108,9 @@ module.exports = function(grunt) {
     var options = this.options({
       tokenFile: '.accessToken',
       testOutputFile: 'out.json',
-      tokenRequestUri: 'http://localhost:1337/api/v1/oauth/token',
-      testReportUri: 'http://localhost:1337/api/v1/testSnapshot'
+      tokenRequestUri: 'http://www.tophat.io/api/v1/oauth/token',
+      testReportUri: 'http://www.tophat.io/api/v1/testSnapshot',
+      pattern: '**/*.js'
     });
 
     // Find local auth token.
@@ -108,13 +124,16 @@ module.exports = function(grunt) {
 
     var testStats = getTestStats(options.testOutputFile);
 
+    var files = getFiles(options.pattern);
+
     // Using auth token post results
-    Q.all([token, testStats]).then(function(results) {
+    Q.all([token, testStats, files]).then(function(results) {
       var token = results[0],
           testResults = results[1],
           params = _.extend({
-          access_token: token
-        }, testResults);
+            access_token: token,
+            files: results[2]
+          }, testResults);
 
       request
         .post(options.testReportUri)
