@@ -110,7 +110,7 @@ module.exports = function(grunt) {
       testOutputFile: 'out.json',
       tokenRequestUri: 'http://www.tophat.io/api/v1/oauth/token',
       testReportUri: 'http://www.tophat.io/api/v1/testSnapshot',
-      pattern: '**/*.js'
+      uploadFiles: '**/*.js'
     });
 
     // Find local auth token.
@@ -124,7 +124,7 @@ module.exports = function(grunt) {
 
     var testStats = getTestStats(options.testOutputFile);
 
-    var files = getFiles(options.pattern);
+    var files = getFiles(options.uploadFiles);
 
     // Using auth token post results
     Q.all([token, testStats, files]).then(function(results) {
