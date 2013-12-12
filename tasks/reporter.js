@@ -13,7 +13,8 @@ var prompt = require('prompt'),
     fs = require('fs'),
     _ = require('lodash'),
     request = require('superagent'),
-    globule = require('globule');
+    globule = require('globule'),
+    readJson = require('read-package-json');
 
 
 
@@ -73,11 +74,14 @@ var getToken = function(options) {
 
 
 var getTestStats = function(testOutputFile) {
-  return Q.ninvoke(fs, 'readFile', testOutputFile, 'utf8').then(function(output) {
+  return Q.spread([
+    Q.ninvoke(fs, 'readFile', testOutputFile, 'utf8'),
+    Q.nfcall(readJson, 'package.json')
+  ]).then(function(output, pkg) {
     var jsonReport = JSON.parse(output);
     var stats = jsonReport.stats;
     stats.testsPassed = jsonReport.passes;
-    stats.name = process.cwd().split('/').pop();
+    stats.name = pkg.name;
     return stats;
   });
 };
