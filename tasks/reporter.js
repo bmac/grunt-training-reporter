@@ -77,7 +77,7 @@ var getTestStats = function(testOutputFile) {
   return Q.spread([
     Q.ninvoke(fs, 'readFile', testOutputFile, 'utf8'),
     Q.nfcall(readJson, 'package.json')
-  ]).then(function(output, pkg) {
+  ], function(output, pkg) {
     var jsonReport = JSON.parse(output);
     var stats = jsonReport.stats;
     stats.testsPassed = jsonReport.passes;
