@@ -112,8 +112,8 @@ module.exports = function(grunt) {
     var options = this.options({
       tokenFile: '.accessToken',
       testOutputFile: 'out.json',
-      tokenRequestUri: 'http://www.tophat.io/api/v1/oauth/token',
-      testReportUri: 'http://www.tophat.io/api/v1/testSnapshot',
+      tokenRequestUri: 'http://www.tophat.io/api/v2/auth',
+      testReportUri: 'http://www.tophat.io/api/v2/test_snapshot',
       uploadFiles: '**/*.js'
     });
 
