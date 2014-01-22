@@ -57,7 +57,7 @@ var requestNewToken = function(options) {
     if (arg.status !== 200) {
       throw arg.text;
     }
-    return arg.body.access_token.token;
+    return arg.body.token;
   });
 };
 
